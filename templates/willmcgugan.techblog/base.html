@@ -1,0 +1,275 @@
+<!doctype HTML>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% emptyblock "og" %}
+        <!--<link href='http://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>-->
+        <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+        <title>{% block "title" %}${title}{% end %}</title>
+
+        <style>
+        .moya-admin-menu
+        {
+            position:fixed !important;
+            float:left;
+            left:8px;
+            margin-right:16px;
+            z-index:10000;
+            margin-top:10px;
+        }
+        .moya-admin-menu:hover
+        {
+            opacity:1;
+        }
+        .navbar-fixed-top + .container
+        {
+            margin-top:70px;
+        }
+        .techblog-post-titles:before
+        {
+            content:"▼";
+            position:absolute;
+            z-index:2000;
+            bottom:0px;
+            width:100%;
+            text-align: center;
+            font-size:11px;
+            margin-bottom:2px;
+            opacity:0.9;
+        }
+        body.loaded .techblog-post-titles:before
+        {
+            opacity:0.0;
+            margin-bottom:2px;
+            transition: opacity 3s 2s;
+        }
+
+        .techblog-post-image-preview
+        {
+            content:' ';
+            width:100%;
+            height:100vh;
+            display:block;
+            position:absolute;
+            background-size:cover;
+            z-index:1;
+            background-color:#2780e3;
+            opacity:1;
+            transition:opacity 1s;
+        }
+
+        .techblog-post-image-container
+        {
+            width:100%;
+            height:100vh;
+            overflow:hidden;
+            position:relative;
+        }
+
+
+        .techblog-post-image-preview, .techblog-post-image
+        {
+            transition:opacity 2s;
+        }
+
+
+        .loaded .techblog-post-image-preview, .loaded .techblog-post-image
+        {
+            transition:opacity 1s;
+        }
+
+        </style>
+
+        {% let title_image = post.title_image or blog.image %}
+        {% if title_image %}
+        {% cache for 1d key [title_image.updated_time, title_image.id] %}
+        <style>
+        .techblog-post-image-preview
+        {
+            background-image:url("${title_image.file|'thumbnail'(processor="title.blur")}");
+            background-position: ${title_image.position or 'center center'} !important;
+        }
+
+        .techblog-post-image
+        {
+            opacity: 0;
+            background-position: ${title_image.position or 'center center'} !important;
+        }
+
+        .preview-loaded.show-titles .techblog-post-image
+        {
+            opacity: 1;
+
+        }
+
+        @media (min-height:960px)
+        {
+            .preview-loaded .techblog-post-image
+            {
+                background-image:url("${title_image.file|'thumbnail'(processor="title.lg")}");
+            }
+        }
+        @media (max-height:960px)
+        {
+            .preview-loaded .techblog-post-image
+            {
+                background-image:url("${title_image.file|'thumbnail'(processor="title.md")}");
+            }
+        }
+        @media (max-height:600px)
+        {
+            .preview-loaded .techblog-post-image
+            {
+                background-image:url("${title_image.file|'thumbnail'(processor="title.sm")}");
+            }
+        }
+
+        @media (min-height:960px) and (min-resolution: 2dppx)
+        {
+            .preview-loaded .techblog-post-image
+            {
+                background-image:url("${title_image.file|'thumbnail'(processor="title.lg2x")}");
+            }
+        }
+        @media (max-height:960px) and (min-resolution: 2dppx)
+        {
+            .preview-loaded .techblog-post-image
+            {
+                background-image:url("${title_image.file|'thumbnail'(processor="title.md2x")}");
+            }
+        }
+        @media (max-height:600px) and (min-resolution: 2dppx)
+        {
+            .preview-loaded .techblog-post-image
+            {
+                background-image:url("${title_image.file|'thumbnail'(processor="title.sm2x")}");
+            }
+        }
+        </style>
+        {% end-cache %}
+        {% endif %}
+
+    <style>
+    .techblog-post-titles > *
+    {
+        text-align: center;
+    }
+    .techblog-post-titles h1
+    {
+        font-size:54px;
+        text-shadow: 1px 1px 6px black;
+    }
+    .techblog-post-titles p
+    {
+        text-shadow: 1px 1px 6px black;
+    }
+    .techblog-post-titles .container
+    {
+        margin-bottom:25vh;
+    }
+
+    .techblog-post-titles a
+    {
+        background-color: rgba(0,0,0,0.2);
+
+        border-radius:20px;
+        padding:10px;
+        margin:10px;
+        color:white !important;
+        margin-top:30px;
+        display:block;
+
+        text-shadow:0px 0px 16px black;
+    }
+
+     .techblog-post-titles a:hover
+     {
+        background-color: rgba(200,200,200,0.2);
+     }
+
+    .techblog-post-titles a:hover
+    {
+        color:white;
+    }
+
+    nav
+    {
+        background-color: #CD7399 !important;
+        opacity:0.8;
+    }
+
+    nav:hover
+    {
+        background-color: #CD7399 !important;
+    }
+
+    </style>
+
+{% block "includecss" %}{% render include.css %}{% end %}
+{% block "css" %}{% render sections.css %}{% end %}
+
+{% block "jshead" %}{% render sections.jshead %}{% end %}
+{% block "head" %}{% render sections.head %}{% end %}
+
+    </head>
+
+    <body {% if title_image %}{% cache for 1d key [title_image.id] %}data-title_image_preview="${title_image.file|'thumbnail'(processor="title.blur")}"{% end-cache %}{% endif %}>
+        <input type="hidden" name="techblog_rpc" value="{% url 'rpc' from 'willmcgugan.techblog' %}" />
+        {% include "/navbar.html" %}
+
+        <div id="techblog-expanded-image" class="frame-container">
+            <div class="image-wait">
+                <div class="loader"></div>
+            </div>
+            <div class="frame">
+            </div>
+            <table class="image-notes">
+                <tr>
+                    <td class="image-details"></td>
+                    <td class="image-author"></td>
+                </tr>
+            </table>
+        </div>
+
+        {% emptyblock "titles" %}
+
+        <div class="techblog-main">
+            <div class="container clearfix">
+
+                <!-- Some posts have embedded JS, so we need JQuery here -->
+                <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+                {% block "body" %}
+                <div class="row margin-top clearfix">
+                    {% if sections.body %}
+                    <div class="col-lg-12">
+                        {% render sections.body %}
+                    </div>
+                    {%- else %}
+                    <div class="col-md-9">
+                        {% render sections.header %}
+                        {% render sections.content %}
+                    </div>
+                    <div class="col-md-3">
+                        {% render sections.side %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endblock %}
+
+            </div>
+            {% block "footer" %}
+            {% include "/footer.html" %}
+            {% endblock %}
+        </div>
+<!-- <script src="{% media 'js/jquery.js' from 'moya.twitter.bootstrap' %}"></script> -->
+{% block "includejs" %}{% render include.js %}{% endblock %}
+{% block "js" %}{% render sections.js unique %}{% endblock %}
+{% block "jsfoot" %}{% render sections.jsfoot unique %}{% endblock %}
+
+{% include "/ga.html" %}
+
+    </body>
+</body>

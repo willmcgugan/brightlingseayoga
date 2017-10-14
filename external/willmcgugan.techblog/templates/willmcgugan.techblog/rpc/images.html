@@ -1,0 +1,3 @@
+{% for image in images -%}
+<moya insert="willmcgugan.techblog#insert.image" app="${.app.name}" data-image="${image.slug}"/>
+{% endfor %}

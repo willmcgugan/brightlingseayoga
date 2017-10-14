@@ -1,0 +1,68 @@
+<moya xmlns="http://moyaproject.com">
+
+    <!-- Initialize a server -->
+    <server docname="main">
+
+        <!--added by moya-pm--><import lib="moya.logins"/>
+<!--added by moya-pm--><import lib="moya.widgets.extra"/>
+<!--added by moya-pm--><import lib="moya.thumbnail"/>
+<!--added by moya-pm--><import lib="moya.imagelib"/>
+<!--added by moya-pm--><import lib="moya.fontawesome"/>
+<!--added by moya-pm--><import lib="willmcgugan.techblog"/>
+<!-- Import libraries for use in your project -->
+        <import lib="moya.debug" if=".debug"/>
+        <import lib="moya.diagnostics" if="not .debug"/>
+        <import lib="moya.auth"/>
+        <import lib="moya.session"/>
+        <import lib="moya.signup"/>
+        <import lib="moya.admin"/>
+        <import lib="moya.static"/>
+        <import lib="moya.favicon"/>
+        <import lib="moya.links"/>
+        <import lib="moya.twitter.bootstrap"/>
+        <import lib="moya.forms"/>
+        <import lib="moya.widgets"/>
+        <import lib="moya.feedback"/>
+        <import lib="moya.jsonrpc"/>
+        <import lib="moya.wysihtml5"/>
+        <import lib="moya.google.recaptcha"/>
+        <import lib="moya.comments"/>
+
+        <!-- The 'site' library, for non reusable content -->
+        <import location="./site" priority="10"/>
+        <install name="site" lib="site.brightlingsea-yoga" mount="/"/>
+
+        <!-- Install applications (instances of a library) -->
+        <install lib="moya.forms" name="forms"/>
+        <install lib="moya.widgets" name="widgets"/>
+        <install lib="moya.auth" name="auth" mount="/auth/"/>
+        <mount app="auth" mountpoint="middleware" url="/"/>
+        <install lib="moya.session" name="session" mount="/"/>
+        <install lib="moya.signup" name="signup" mount="/signup/"/>
+        <install lib="moya.admin" name="admin" mount="/admin/"/>
+        <install lib="moya.static" name="media" mount="/static/"/>
+        <install lib="moya.debug" name="debug" mount="/debug/" if=".debug"/>
+        <install lib="moya.diagnostics" name="diagnostics" if="not .debug"/>
+        <install lib="moya.twitter.bootstrap" name="bootstrap"/>
+        <install lib="moya.links" name="links"/>
+        <install lib="moya.favicon" name="favicon" mount="/"/>
+        <install lib="moya.feedback" name="feedback" mount="/feedback/"/>
+        <install lib="moya.jsonrpc" name="jsonrpc"/>
+        <install lib="moya.wysihtml5" name="wysihtml5"/>
+        <install lib="moya.google.recaptcha" name="recaptcha"/>
+        <install name="comments" lib="moya.comments" mount="/comments/"/>
+
+    <!--added by moya-pm--><install lib="willmcgugan.techblog" name="techblog" mount="/"/>
+    <install name="serve_uploads" lib="moya.static" mount="/uploads/"/>
+<!--added by moya-pm--><install lib="moya.fontawesome" name="fontawesome"/>
+<!--added by moya-pm--><install lib="moya.imagelib" name="imagelib"/>
+<!--added by moya-pm--><install lib="moya.thumbnail" name="thumbs"/>
+<!--added by moya-pm--><install lib="moya.widgets.extra" name="widgetsextra"/>
+<!--added by moya-pm--><install lib="moya.logins" name="logins" mount="/sign-in/"/>
+
+    <mount app="imagelib" url="/imgs/"/>
+
+
+</server>
+
+</moya>

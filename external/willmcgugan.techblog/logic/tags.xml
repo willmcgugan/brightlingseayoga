@@ -1,0 +1,139 @@
+<!--
+This file defines additional tags. Moya typically uses tags to define a public interface.
+-->
+<moya xmlns="http://moyaproject.com"
+    xmlns:let="http://moyaproject.com/let"
+    xmlns:db="http://moyaproject.com/db"
+    xmlns:soup="http://moyaproject.com/soup">
+
+    <tag name="update-tags">
+        <doc>
+            Update tags for a given post.
+        </doc>
+        <signature>
+            <attribute name="post" required="yes">Post object</attribute>
+            <attribute name="tags" required="no" default="None">Comma separated tags</attribute>
+        </signature>
+        <db:atomic>
+            <!-- Reduce the count for tags on the post -->
+            <db:update src="post.tags" let:count="#Tag.count - 1"/>
+            <!-- Re-add tags (if supplied) -->
+            <for src="stripall:commasplit:tags" dst="name" if="tags">
+                <db:get-or-create model="#Tag" dst="tag"
+                    let:slug="slug:name"
+                    initial="{'name': name}"/>
+                <append src="tag.posts" value="post"/>
+                <inc dst="tag.count"/>
+            </for>
+            <!-- Delete any tags with a zero count -->
+            <db:query model="#Tag" filter="#Tag.count lte 0" action="delete"/>
+        </db:atomic>
+    </tag>
+
+    <tag name="get-related-posts">
+        <doc>
+            Get's the IDs of related posts.
+        </doc>
+        <signature>
+            <attribute name="post" required="yes"/>
+            <attribute name="blog" default="None"/>
+            <attribute name="blogs" default="None"/>
+            <attribute name="count" default="5" />
+        </signature>
+
+        <let this_post="post" />
+
+        <db:query model="#Post" dst="posts"
+            filter="#Post.blog == post.blog" />
+
+        <db:query src="posts" let:published="yes" if="not .permissions.admin"/>
+        <db:query src="posts" filter="#Post.blog in blogs" if="blogs"/>
+        <db:query src="posts" filter="#Post.blog == blog" if="blog"/>
+
+        <list dst="matches"/>
+        <map src="commasplit:post.tagtext" value="slug:$$" dst="posttags"/>
+        <let posttags="set:posttags"/>
+
+        <for src="posts" dst="post" filter="this_post is not post">
+            <map src="commasplit:post.tagtext" value="slug:$$" dst="tags"/>
+            <let common_count="len:(posttags bitand set:tags)"/>
+            <append src="matches" if="common_count gt 0"
+                value="[common_count, (post.published_date or .now), post]"/>
+        </for>
+        <list dst="results"/>
+        <for src="rsorted:matches" dst="_count,time,post">
+            <append src="results" value="post"/>
+            <break if="len:results gte count" />
+        </for>
+        <return value="results" />
+    </tag>
+
+    <filter name="summary" value="html">
+        <doc>
+            Makes a summary from an html fragment.
+
+            This filter extracts paragraphs from HTML up to (but not over) a given number of characters.
+
+            It also removes img tags
+        </doc>
+        <signature>
+            <argument name="post" required="yes"/>
+            <argument name="chars" default="800" required="yes"/>
+        </signature>
+        <soup:extract-list src="html" select="p" dst="paragraphs"/>
+        <return-str if="not paragraphs"/>
+        <pop src="paragraphs" dst="p" key="0"/>
+        <let length="len:strip:striptags:p" summary_paragraphs="[p]"/>
+        <while test="paragraphs">
+            <pop src="paragraphs" dst="p" key="0"/>
+            <let text="strip:striptags:p"/>
+            <let length="length + len:text"/>
+            <break if="length gt chars and text" />
+            <append src="summary_paragraphs" value="p"/>
+        </while>
+
+        <let summary="join:summary_paragraphs"/>
+        <if test="paragraphs">
+            <render-template template="read_more.html" let:post="post" dst="read_more" />
+            <soup:strain src="summary" select="p:last-child" append="read_more" dst="summary"/>
+        </if>
+        <soup:strain src="summary" select="img" remove="yes" dst="summary"/>
+        <return value="html:summary"/>
+    </filter>
+
+    <filter name="leadp" value="html">
+        <doc>Add class="lead" to first paragraph</doc>
+        <soup:strain src="html" select="p" max="1" let:class="'lead'" dst="leadp"/>
+        <return value="html:leadp"/>
+    </filter>
+
+    <filter name="imgsrc" value="html">
+        <doc>Get the src of the first image in html</doc>
+        <soup:extract-attrs src="html" select="img" max="5" dst="attrs"/>
+        <for src="attrs" dst="tag">
+            <return value="'://' in tag.src ? tag.src : .site.url + tag.src" if="not tag.width or int:tag.width gt 1" />
+        </for>
+    </filter>
+
+    <filter name="imgblur" value="html">
+        <soup:extract-attrs src="html" select="img" max="1" dst="attrs"/>
+        <return value="attrs.0['data-blur']" />
+    </filter>
+
+    <filter name="imgsquare" value="html">
+        <soup:extract-attrs src="html" select="img" max="1" dst="attrs"/>
+        <return value="attrs.0['data-square']" />
+    </filter>
+
+    <filter name="imgdata" value="html">
+        <soup:extract-data src="html" select="img" dst="data" max="1"/>
+        <return value="data.0 or {}"/>
+    </filter>
+
+    <filter name="allimgdata" value="html">
+        <return>
+            <soup:extract-data src="html" select="img"/>
+        </return>
+    </filter>
+
+</moya>

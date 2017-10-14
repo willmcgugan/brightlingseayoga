@@ -1,0 +1,10 @@
+<h1>${title:tag.name} Posts</h1>
+<p class="lead">
+{% markup-block as 'bbcode' -%}
+{%- trans number count -%}
+${count} post tagged with [i]${tag.name}[/i]
+{%- plural -%}
+${count} posts tagged with [i]${tag.name}[/i]
+{%- end-trans -%}
+{%- end-markup-block %}
+</p>
