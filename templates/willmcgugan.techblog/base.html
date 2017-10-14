@@ -159,7 +159,7 @@
     .techblog-post-titles h1
     {
         font-size:54px;
-        text-shadow: 1px 1px 6px black;
+        font-weight:400;
     }
     .techblog-post-titles p
     {
@@ -172,7 +172,7 @@
 
     .techblog-post-titles a
     {
-        background-color: rgba(0,0,0,0.2);
+        background-color: rgba(0,0,0,0.4);
 
         border-radius:20px;
         padding:10px;
@@ -180,8 +180,6 @@
         color:white !important;
         margin-top:30px;
         display:block;
-
-        text-shadow:0px 0px 16px black;
     }
 
      .techblog-post-titles a:hover
@@ -194,15 +192,28 @@
         color:white;
     }
 
-    nav
+
+
+    #yoga .techblog-post-titles
     {
-        background-color: #CD7399 !important;
-        opacity:0.8;
+        z-index:11;
+        width:100%;
+        position:absolute;
+        height:100vh;
+        padding:0 0 0 0;
+        vertical-align:bottom;
+        bottom:0px;
+        color:#fff;
+        padding-top:8em;
+
+        bottom:0px;
+        background-color: rgba(0,0,0,.5);
+        background:linear-gradient(#CD7399, transparent);
     }
 
-    nav:hover
+    .tagline
     {
-        background-color: #CD7399 !important;
+        margin-top:40px;
     }
 
     </style>
@@ -215,7 +226,7 @@
 
     </head>
 
-    <body {% if title_image %}{% cache for 1d key [title_image.id] %}data-title_image_preview="${title_image.file|'thumbnail'(processor="title.blur")}"{% end-cache %}{% endif %}>
+    <body {% if title_image %}{% cache for 1d key [title_image.id] %}data-title_image_preview="${title_image.file|'thumbnail'(processor="title.blur")}"{% end-cache %}{% endif %} id="yoga">
         <input type="hidden" name="techblog_rpc" value="{% url 'rpc' from 'willmcgugan.techblog' %}" />
         {% include "/navbar.html" %}
 
