@@ -50,6 +50,11 @@
                     About
                 </a>
             </li>
+            <li{% if post.slug == 'classes' and post.blog.slug=='pages' %} class="active"{% endif %}>
+                <a href="/classes/">
+                    Classes
+                </a>
+            </li>
             {%- if .user %}
             <li>
                 <a href="{% url 'user_edit' from 'moya.auth' %}" title="User Details">
