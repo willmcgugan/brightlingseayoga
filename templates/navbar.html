@@ -50,6 +50,11 @@
                     About
                 </a>
             </li>
+            <li{% if post.slug == 'contact' and post.blog.slug=='pages' %} class="active"{% endif %}>
+                <a href="/contact/">
+                    Contact
+                </a>
+            </li>
             <li{% if post.slug == 'classes' and post.blog.slug=='pages' %} class="active"{% endif %}>
                 <a href="/classes/">
                     Classes
